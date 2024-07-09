@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prestamium.Api", "Prestamiu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prestamium.Entities", "Prestamium.Entities\Prestamium.Entities.csproj", "{38E01AF8-B870-469D-BB88-4CE5EC9725C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prestamium.Repositories", "Prestamium.Repositories\Prestamium.Repositories.csproj", "{7F89CBB3-C30F-4109-9E7A-1A07D0B10A9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{38E01AF8-B870-469D-BB88-4CE5EC9725C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38E01AF8-B870-469D-BB88-4CE5EC9725C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38E01AF8-B870-469D-BB88-4CE5EC9725C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F89CBB3-C30F-4109-9E7A-1A07D0B10A9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F89CBB3-C30F-4109-9E7A-1A07D0B10A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F89CBB3-C30F-4109-9E7A-1A07D0B10A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F89CBB3-C30F-4109-9E7A-1A07D0B10A9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
