@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prestamium.Api", "Prestamium.Api\Prestamium.Api.csproj", "{59DAAA9E-9023-43D5-8F73-013ED3363F70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prestamium.Entities", "Prestamium.Entities\Prestamium.Entities.csproj", "{38E01AF8-B870-469D-BB88-4CE5EC9725C8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59DAAA9E-9023-43D5-8F73-013ED3363F70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59DAAA9E-9023-43D5-8F73-013ED3363F70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59DAAA9E-9023-43D5-8F73-013ED3363F70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59DAAA9E-9023-43D5-8F73-013ED3363F70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38E01AF8-B870-469D-BB88-4CE5EC9725C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38E01AF8-B870-469D-BB88-4CE5EC9725C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38E01AF8-B870-469D-BB88-4CE5EC9725C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38E01AF8-B870-469D-BB88-4CE5EC9725C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C1AE751-DA07-4A69-9F80-7480CC8C4657}
+	EndGlobalSection
+EndGlobal
