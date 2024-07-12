@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
       <PrivateAssets>all</PrivateAssets>
@@ -23,10 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Prestamium.Persistence\Prestamium.Persistence.csproj" />
     <ProjectReference Include="..\Prestamium.Repositories\Prestamium.Repositories.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\Prestamium.Services\Prestamium.Services.csproj" />
   </ItemGroup>
 
 </Project>

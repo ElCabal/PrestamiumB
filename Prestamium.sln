@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prestamium.Entities", "Pres
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prestamium.Repositories", "Prestamium.Repositories\Prestamium.Repositories.csproj", "{7F89CBB3-C30F-4109-9E7A-1A07D0B10A9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prestamium.Persistence", "Prestamium.Persistence\Prestamium.Persistence.csproj", "{F875BE50-227A-45FB-88E1-45F6AEF41723}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prestamium.Persistence", "Prestamium.Persistence\Prestamium.Persistence.csproj", "{F875BE50-227A-45FB-88E1-45F6AEF41723}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prestamium.Services", "Prestamium.Services\Prestamium.Services.csproj", "{CCA13B97-D8EA-47DE-99CB-FC6DBB86EE32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prestamium.Dto", "Prestamium.Dto\Prestamium.Dto.csproj", "{BBFD8281-3581-4E29-83E6-8816030D88E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{F875BE50-227A-45FB-88E1-45F6AEF41723}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F875BE50-227A-45FB-88E1-45F6AEF41723}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F875BE50-227A-45FB-88E1-45F6AEF41723}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCA13B97-D8EA-47DE-99CB-FC6DBB86EE32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCA13B97-D8EA-47DE-99CB-FC6DBB86EE32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCA13B97-D8EA-47DE-99CB-FC6DBB86EE32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCA13B97-D8EA-47DE-99CB-FC6DBB86EE32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBFD8281-3581-4E29-83E6-8816030D88E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBFD8281-3581-4E29-83E6-8816030D88E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBFD8281-3581-4E29-83E6-8816030D88E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBFD8281-3581-4E29-83E6-8816030D88E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Prestamium.Entities\Prestamium.Entities.csproj" />
-    <ProjectReference Include="..\Prestamium.Persistence\Prestamium.Persistence.csproj" />
-  </ItemGroup>
-
 </Project>

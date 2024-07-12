@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Prestamium.Persistence;
-using Prestamium.Repositories;
+using Prestamium.Repositories.Interfaces;
+using Prestamium.Repositories.Repositories;
+using Prestamium.Services.Interfaces;
+using Prestamium.Services.Profiles;
+using Prestamium.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +22,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 //register services
-builder.Services.AddScoped<ClientRepository>();
 
+builder.Services.AddTransient<IClientRepository, ClientRepository>();
+
+builder.Services.AddTransient<IClientService, ClientService>();
+
+//Profile Mappers
+builder.Services.AddAutoMapper(config =>
+{
+    config.AddProfile<ClientProfile>();
+});
 
 var app = builder.Build();
 
