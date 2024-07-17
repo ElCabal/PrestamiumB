@@ -4,7 +4,7 @@ using Prestamium.Services.Interfaces;
 
 namespace Prestamium.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/clients")]
     [ApiController]
     public class ClientController : ControllerBase
     {

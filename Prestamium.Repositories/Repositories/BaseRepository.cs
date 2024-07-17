@@ -16,12 +16,14 @@ namespace Prestamium.Repositories.Repositories
         public virtual async Task<ICollection<TEntity>> GetAsync()
         {
             return await context.Set<TEntity>()
+                .Where(x => x.Status)
                 .AsNoTracking() // Hace más efeciente la consulta
                 .ToListAsync();
         }
         public async Task<ICollection<TEntity>> GetAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await context.Set<TEntity>()
+                .Where(x => x.Status)
                 .Where(predicate)
                 .AsNoTracking()
                 .ToListAsync();

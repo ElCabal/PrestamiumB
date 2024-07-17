@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Prestamium.Entities;
+using System.Reflection;
 
 namespace Prestamium.Persistence
 {
@@ -15,10 +16,10 @@ namespace Prestamium.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Client>().Property(x => x.Name).HasMaxLength(50);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            //modelBuilder.Entity<Client>().Property(x => x.Name).HasMaxLength(50);
         }
 
-        public DbSet<Client> Clients { get; set; }
+        //public DbSet<Client> Clients { get; set; }
     }
 }

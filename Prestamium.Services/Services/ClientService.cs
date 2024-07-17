@@ -69,15 +69,23 @@ namespace Prestamium.Services.Services
         }
         public async Task<BaseResponse> UpdateAsync(int id, ClientRequestDto request)
         {
-            var response = new BaseResponseGeneric<int>();
+            var response = new BaseResponse();
             try
             {
-                response.Data = await repository.AddAsync(mapper.Map<Client>(request));
+                var data = await repository.GetAsync(id);
+                if (data is null)
+                {
+                    response.ErrorMessage = $"No existe el cliente con id {id}.";
+                    return response;
+                }
+
+                mapper.Map(request, data);
+                await repository.UpdateAsync();
                 response.Success = true;
             }
             catch (Exception ex)
             {
-                response.ErrorMessage = "Ocurrió un error al actualizar la información del cliente";
+                response.ErrorMessage = "Ocurrió un error al obtener la información";
                 logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
             }
             return response;
