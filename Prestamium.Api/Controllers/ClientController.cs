@@ -49,7 +49,7 @@ namespace Prestamium.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var response = await service.DeleteAsync(id);
-            return response.Success ? Ok(response) : BadRequest(response);
+            return response.Success ? Ok(response) : BadRequest(response); 
         }
     }
 }
