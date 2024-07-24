@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Prestamium.Persistence;
 
@@ -11,9 +12,11 @@ using Prestamium.Persistence;
 namespace Prestamium.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240721023331_loan")]
+    partial class loan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,35 +24,6 @@ namespace Prestamium.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Prestamium.Entities.Box", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("CurrentAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("InitialAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Box");
-                });
 
             modelBuilder.Entity("Prestamium.Entities.Client", b =>
                 {
@@ -85,6 +59,29 @@ namespace Prestamium.Persistence.Migrations
                     b.ToTable("Client");
                 });
 
+            modelBuilder.Entity("Prestamium.Entities.InterestRate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InterestRate");
+                });
+
             modelBuilder.Entity("Prestamium.Entities.Loan", b =>
                 {
                     b.Property<int>("Id")
@@ -96,26 +93,19 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("BoxId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("DeadlineMonths")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("Fees")
+                    b.Property<int>("InterestRateId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("InterestRate")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("LoanStatusId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LoanStatusId1")
+                    b.Property<int>("PaymentDeadlineId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -126,21 +116,25 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<string>("StatusLoan")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("TotalAmountDue")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BoxId");
-
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("LoanStatusId1");
+                    b.HasIndex("InterestRateId");
+
+                    b.HasIndex("PaymentDeadlineId");
 
                     b.ToTable("Loan");
                 });
 
-            modelBuilder.Entity("Prestamium.Entities.LoanStatus", b =>
+            modelBuilder.Entity("Prestamium.Entities.PaymentDeadline", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,48 +142,46 @@ namespace Prestamium.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("NameLoanStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("LoanStatus");
+                    b.ToTable("PaymentDeadline");
                 });
 
             modelBuilder.Entity("Prestamium.Entities.Loan", b =>
                 {
-                    b.HasOne("Prestamium.Entities.Box", "Box")
-                        .WithMany("Loans")
-                        .HasForeignKey("BoxId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Prestamium.Entities.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Prestamium.Entities.LoanStatus", "LoanStatus")
+                    b.HasOne("Prestamium.Entities.InterestRate", "InterestRate")
                         .WithMany()
-                        .HasForeignKey("LoanStatusId1")
+                        .HasForeignKey("InterestRateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Box");
+                    b.HasOne("Prestamium.Entities.PaymentDeadline", "PaymentDeadline")
+                        .WithMany()
+                        .HasForeignKey("PaymentDeadlineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Client");
 
-                    b.Navigation("LoanStatus");
-                });
+                    b.Navigation("InterestRate");
 
-            modelBuilder.Entity("Prestamium.Entities.Box", b =>
-                {
-                    b.Navigation("Loans");
+                    b.Navigation("PaymentDeadline");
                 });
 #pragma warning restore 612, 618
         }

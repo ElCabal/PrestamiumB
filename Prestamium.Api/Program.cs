@@ -24,7 +24,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //register services
 
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
-
 builder.Services.AddTransient<IClientService, ClientService>();
 
 //Profile Mappers

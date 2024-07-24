@@ -2,5 +2,5 @@
 
 namespace Prestamium.Repositories.Interfaces
 {
-    public interface IClientRepository : IBaseRepository<Client> {}
+    public interface ILoanRepository : IBaseRepository<Loan>{}
 }
