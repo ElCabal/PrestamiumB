@@ -1,8 +1,12 @@
 ﻿namespace Prestamium.Entities
 {
-    public class Box
+    public class Box : BaseEntity
     {
-        public int Id { get; set; }
+        public string Name { get; set; } = default!;
+        public decimal InitialAmount { get; set; }
+        public decimal CurrentAmount { get; set; }
+        public DateTime CreationDate { get; set; }
+        public ICollection<Loan> Loans { get; set; } = new List<Loan>();
 
     }
 }

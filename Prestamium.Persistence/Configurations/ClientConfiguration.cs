@@ -8,7 +8,9 @@ namespace Prestamium.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Client> builder)
         {
-            builder.Property(x => x.Name).HasMaxLength(300);
+            builder.Property(x => x.Name).HasMaxLength(50);
+            builder.Property(x => x.LastName).HasMaxLength(50);
+            builder.Property(x => x.Email).HasMaxLength(100);
         }
     }
 }
