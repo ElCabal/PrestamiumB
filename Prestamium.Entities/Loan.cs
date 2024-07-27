@@ -2,13 +2,16 @@
 {
     public class Loan : BaseEntity
     {
-        public decimal Amount { get; set; } // Monto a Prestar
-        public decimal TotalAmountDue { get; set; } //Monto Total a Cobrar
-        public int Fees { get; set; } //Cuotas
+        public decimal Amount { get; set; } // Monto a prestar
+        public decimal InterestRate { get; set; } // Tasa de interés
+        public int Fees { get; set; } // Cuotas
+        public string Frecuency { get; set; } = default!; // Diario, Semanal, Mensual
+        public decimal TotalAmountDue { get; set; } // Monto total a cobrar
+        public decimal TotalInterestReceivable { get; set; } // Total interés a cobrar
+        public decimal PaymentAmount { get; set; } // Monto del pago
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public decimal InterestRate { get; set; } //Tasa de Interes
-        public string Frecuency { get; set; } = default!; // Diario, Semanal, Mensual
+        public decimal RemainingBalance { get; set; } // Saldo Restante
         public int ClientId { get; set; }
         public Client Client { get; set; } = default!;
         public string LoanStatusId { get; set; } = default!; // Ejemplo: "Activo", "Pagado", "Vencido", "Cancelado"

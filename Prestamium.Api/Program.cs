@@ -25,11 +25,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
 builder.Services.AddTransient<IClientService, ClientService>();
+builder.Services.AddTransient<ILoanRepository, LoanRepository>();
+builder.Services.AddTransient<ILoanService, LoanService>();
 
 //Profile Mappers
 builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<ClientProfile>();
+    config.AddProfile<LoanProfile>();
 });
 
 var app = builder.Build();
