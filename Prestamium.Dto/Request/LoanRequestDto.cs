@@ -7,7 +7,7 @@
         public decimal InterestRate { get; set; } // Tasa de interés
         public DateTime StartDate { get; set; } // Fecha de inicio
         public int ClientId { get; set; } // ID del cliente
-        public string Frequency { get; set; } = default!; // Frecuencia del pago (Diario, Semanal, Mensual)
-        public int BoxId { get; set; } // ID de la caja
+        public string Frecuency { get; set; } = default!; // Frecuencia del pago (Diario, Semanal, Mensual)
+        //public int BoxId { get; set; } // ID de la caja
     }
 }
