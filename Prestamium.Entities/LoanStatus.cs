@@ -1,6 +1,6 @@
 ﻿namespace Prestamium.Entities
 {
-    public class LoanStatus : BaseEntity
+    public class LoanStatus
     {
         public string NameLoanStatus { get; set; } = default!;
     }
