@@ -14,7 +14,7 @@ namespace Prestamium.Services.Services
         private readonly ILogger<LoanService> logger;
         private readonly IMapper mapper;
 
-        public LoanService(ILoanRepository loanRepository, ILogger<LoanService> logger, IMapper mapper) 
+        public LoanService(ILoanRepository loanRepository, ILogger<LoanService> logger, IMapper mapper)
         {
             this.loanRepository = loanRepository;
             this.logger = logger;
@@ -26,27 +26,25 @@ namespace Prestamium.Services.Services
             try
             {
                 var loan = mapper.Map<Loan>(request);
-                loan.TotalInterestReceivable = loan.Amount * loan.InterestRate / 100;
-                loan.TotalAmountDue = loan.Amount + loan.TotalInterestReceivable;
-                loan.RemainingBalance = -loan.TotalAmountDue;
 
                 switch (loan.Frecuency.ToLower())
                 {
-                    case "diaria":
-                        loan.PaymentAmount = CalculateDailyPayment(loan.Amount, loan.Fees, loan.InterestRate);
-                        loan.EndDate = loan.StartDate.AddDays(loan.Fees);
-                        break;
-                    case "semanal":
-                        loan.PaymentAmount = CalculateWeeklyPayment(loan.Amount, loan.Fees, loan.InterestRate);
-                        loan.EndDate = loan.StartDate.AddDays(loan.Fees * 7);
+                    case "quincenal":
+                        loan.TotalInterestReceivable = loan.Amount * ((loan.InterestRate / 100) * loan.Fees);
+                        loan.TotalAmountDue = loan.Amount + loan.TotalInterestReceivable;
+                        loan.PaymentAmount = CalculateBiweeklyPayment(loan.Amount, loan.Fees, loan.InterestRate);
+                        loan.EndDate = loan.StartDate.AddDays(loan.Fees * 15);
                         break;
                     case "mensual":
+                        loan.TotalInterestReceivable = loan.Amount * ((loan.InterestRate / 100) * loan.Fees);
+                        loan.TotalAmountDue = loan.Amount + loan.TotalInterestReceivable;
                         loan.PaymentAmount = CalculateMonthlyPayment(loan.Amount, loan.Fees, loan.InterestRate);
                         loan.EndDate = loan.StartDate.AddMonths(loan.Fees);
                         break;
                     default:
                         throw new ArgumentException("Frecuencia no válida");
                 }
+                loan.RemainingBalance = loan.TotalAmountDue;
 
                 response.Data = await loanRepository.AddAsync(loan);
                 response.Success = response.Data > 0;
@@ -59,27 +57,21 @@ namespace Prestamium.Services.Services
             return response;
         }
 
-        private decimal CalculateDailyPayment(decimal amount, int fees, decimal interestRate)
+        private decimal CalculateBiweeklyPayment(decimal amount, int fees, decimal interestRate)
         {
-            var dailyInterestRate = interestRate / 100 / 365; // Convertir la tasa de interés anual a diaria
-            var paymentAmount = amount * dailyInterestRate / (1 - (decimal)Math.Pow((double)(1 + dailyInterestRate), -fees));
-            return paymentAmount;
-        }
-
-        private decimal CalculateWeeklyPayment(decimal amount, int fees, decimal interestRate)
-        {
-            var weeklyInterestRate = interestRate / 100 / 52; // Convertir la tasa de interés anual a semanal
-            var paymentAmount = amount * weeklyInterestRate / (1 - (decimal)Math.Pow((double)(1 + weeklyInterestRate), -fees));
-            return paymentAmount;
+            decimal interestAmount = amount * (interestRate / 100);
+            decimal totalInterest = interestAmount * fees;
+            decimal totalAmountDue = amount + totalInterest;
+            return totalAmountDue / fees;
         }
 
         private decimal CalculateMonthlyPayment(decimal amount, int fees, decimal interestRate)
         {
-            var monthlyInterestRate = interestRate / 100 / 12;
-            var paymentAmount = amount * monthlyInterestRate / (1 - (decimal)Math.Pow((double)(1 + monthlyInterestRate), -fees));
-            return paymentAmount;
+            decimal interestAmount = amount * (interestRate / 100);
+            decimal totalInterest = interestAmount * fees;
+            decimal totalAmountDue = amount + totalInterest;
+            return totalAmountDue / fees;
         }
-
         public Task<BaseResponseGeneric<ICollection<LoanResponseDto>>> GetAsync()
         {
             throw new NotImplementedException();
