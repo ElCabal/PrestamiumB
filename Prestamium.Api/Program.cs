@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
 });
 
-//register services
+//register service
 
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
 builder.Services.AddTransient<IClientService, ClientService>();
