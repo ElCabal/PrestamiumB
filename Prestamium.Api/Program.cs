@@ -27,6 +27,7 @@ builder.Services.AddTransient<IClientRepository, ClientRepository>();
 builder.Services.AddTransient<IClientService, ClientService>();
 builder.Services.AddTransient<ILoanRepository, LoanRepository>();
 builder.Services.AddTransient<ILoanService, LoanService>();
+builder.Services.AddTransient<IInstallmentRepository, InstallmentRepository>();
 
 //Profile Mappers
 builder.Services.AddAutoMapper(config =>
