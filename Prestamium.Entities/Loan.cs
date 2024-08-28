@@ -14,6 +14,8 @@
         public decimal RemainingBalance { get; set; } = 0; // Saldo Restante
         public int ClientId { get; set; }
         public Client Client { get; set; } = default!;
+
+        public ICollection<Installment> Installments { get; set; } = new List<Installment>();
         //public string LoanStatusId { get; set; } = default!; // Ejemplo: "Activo", "Pagado", "Vencido", "Cancelado"
         //public LoanStatus LoanStatus { get; set; } = default!;
         //public int BoxId { get; set; }

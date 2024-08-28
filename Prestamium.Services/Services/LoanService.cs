@@ -11,12 +11,20 @@ namespace Prestamium.Services.Services
     public class LoanService : ILoanService
     {
         private readonly ILoanRepository loanRepository;
+        private readonly IInstallmentRepository installmentRepository;
         private readonly ILogger<LoanService> logger;
         private readonly IMapper mapper;
 
-        public LoanService(ILoanRepository loanRepository, ILogger<LoanService> logger, IMapper mapper)
+        public LoanService
+            (
+                ILoanRepository loanRepository,
+                IInstallmentRepository installmentRepository,
+                ILogger<LoanService> logger, 
+                IMapper mapper
+            )
         {
             this.loanRepository = loanRepository;
+            this.installmentRepository = installmentRepository;
             this.logger = logger;
             this.mapper = mapper;
         }
@@ -29,13 +37,13 @@ namespace Prestamium.Services.Services
 
                 switch (loan.Frecuency.ToLower())
                 {
-                    case "quincenal":
+                    case "biweekly": //quincenal
                         loan.TotalInterestReceivable = loan.Amount * ((loan.InterestRate / 100) * loan.Fees);
                         loan.TotalAmountDue = loan.Amount + loan.TotalInterestReceivable;
                         loan.PaymentAmount = CalculateBiweeklyPayment(loan.Amount, loan.Fees, loan.InterestRate);
                         loan.EndDate = loan.StartDate.AddDays(loan.Fees * 15);
                         break;
-                    case "mensual":
+                    case "monthly": //mensual
                         loan.TotalInterestReceivable = loan.Amount * ((loan.InterestRate / 100) * loan.Fees);
                         loan.TotalAmountDue = loan.Amount + loan.TotalInterestReceivable;
                         loan.PaymentAmount = CalculateMonthlyPayment(loan.Amount, loan.Fees, loan.InterestRate);
@@ -48,6 +56,12 @@ namespace Prestamium.Services.Services
 
                 response.Data = await loanRepository.AddAsync(loan);
                 response.Success = response.Data > 0;
+
+                // Si el préstamo se guardó correctamente, generar y guardar las cuotas
+                if (response.Success)
+                {
+                    await GenerateInstallments(loan);
+                }
             }
             catch (Exception ex)
             {
@@ -72,6 +86,26 @@ namespace Prestamium.Services.Services
             decimal totalAmountDue = amount + totalInterest;
             return totalAmountDue / fees;
         }
+
+        private async Task GenerateInstallments(Loan loan)
+        {
+            for (int i = 0; i < loan.Fees; i++)
+            {
+                var installment = new Installment
+                {
+                    LoanId = loan.Id,
+                    Amount = loan.PaymentAmount,
+                    DueDate = loan.Frecuency == "biweekly"
+                                ? loan.StartDate.AddMonths(i + 1)
+                                : loan.StartDate.AddDays((i + 1) * 15),
+                    IsPaid = false
+                };
+
+                // Guardar cada cuota en la base de datos
+                await installmentRepository.AddAsync(installment);
+            }
+        }
+
         public Task<BaseResponseGeneric<ICollection<LoanResponseDto>>> GetAsync()
         {
             throw new NotImplementedException();
