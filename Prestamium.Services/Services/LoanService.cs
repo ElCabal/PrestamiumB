@@ -89,15 +89,15 @@ namespace Prestamium.Services.Services
 
         private async Task GenerateInstallments(Loan loan)
         {
-            for (int i = 0; i < loan.Fees; i++)
+            for (int i = 1; i <= loan.Fees; i++)
             {
                 var installment = new Installment
                 {
                     LoanId = loan.Id,
                     Amount = loan.PaymentAmount,
-                    DueDate = loan.Frecuency == "biweekly"
-                                ? loan.StartDate.AddMonths(i + 1)
-                                : loan.StartDate.AddDays((i + 1) * 15),
+                    DueDate = loan.Frecuency == "monthly"
+                                ? loan.StartDate.AddMonths(i)
+                                : loan.StartDate.AddDays((i) * 15),
                     IsPaid = false
                 };
 
