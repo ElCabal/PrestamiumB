@@ -3,10 +3,12 @@
     public class ClientResponseDto
     {
         public int Id { get; set; }
-        public string Name { get; set; } = default!;
+        public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
-        public int CellPhoneNumber { get; set; }
-        public string Email { get; set; } = default!;
-        public bool Status { get; set; } = true;
+        public string DocumentNumber { get; set; } = default!;
+        public string Phone { get; set; } = default!;
+        public string? Address { get; set; }
+        public string? Email { get; set; }
+        public bool Status { get; set; }
     }
 }
