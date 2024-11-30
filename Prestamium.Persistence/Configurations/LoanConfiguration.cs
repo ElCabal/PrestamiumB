@@ -8,12 +8,25 @@ namespace Prestamium.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Loan> builder)
         {
-            builder.Property(x => x.Amount).HasColumnType("decimal(18,2)");
-            builder.Property(x => x.TotalAmountDue).HasColumnType("decimal(18,2)");
-            builder.Property(x => x.StartDate)
-                .HasColumnType("datetime")
-                .HasDefaultValueSql("GETDATE()");
-            builder.Property(x => x.EndDate).HasColumnType("datetime");
+            builder.ToTable("Loan");
+
+            builder.Property(e => e.Amount).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(e => e.InterestRate).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(e => e.TotalAmountDue).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(e => e.TotalInterestReceivable).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(e => e.PaymentAmount).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(e => e.RemainingBalance).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(e => e.Frequency).HasMaxLength(20).IsRequired();
+
+            builder.HasOne(e => e.Client)
+                .WithMany(e => e.Loans)
+                .HasForeignKey(e => e.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.Box)
+                .WithMany(e => e.Loans)
+                .HasForeignKey(e => e.BoxId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

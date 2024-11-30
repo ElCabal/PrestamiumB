@@ -1,9 +1,14 @@
-﻿namespace Prestamium.Entities
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Prestamium.Dto.Response
 {
-    public class Installment : BaseEntity
+    public class InstallmentResponseDto
     {
-        public int LoanId { get; set; }
-        public Loan Loan { get; set; } = default!;
+        public int Id { get; set; }
         public decimal Amount { get; set; }
         public DateTime DueDate { get; set; }
         public bool IsPaid { get; set; }
