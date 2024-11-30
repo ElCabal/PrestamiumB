@@ -5,8 +5,11 @@ namespace Prestamium.Services.Interfaces
 {
     public interface ILoanService
     {
-        Task<BaseResponseGeneric<ICollection<LoanResponseDto>>> GetAsync();
-        Task<BaseResponseGeneric<LoanResponseDto>> GetAsync(int id);
-        Task<BaseResponseGeneric<int>> AddAsync(LoanRequestDto request);
+        Task<BaseResponseGeneric<int>> CreateAsync(LoanRequestDto request);
+        Task<BaseResponseGeneric<ICollection<LoanResponseDto>>> GetAllAsync();
+        Task<BaseResponseGeneric<LoanResponseDto>> GetByIdAsync(int id);
+        Task<BaseResponseGeneric<ICollection<LoanResponseDto>>> GetByClientIdAsync(int clientId);
+        Task<BaseResponseGeneric<decimal>> CalculateLateFeesAsync(int installmentId, DateTime paymentDate);
+        Task<BaseResponseGeneric<bool>> RegisterInstallmentPaymentAsync(int installmentId, decimal amount, int boxId);
     }
 }

@@ -8,8 +8,15 @@ namespace Prestamium.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Installment> builder)
         {
-            builder.Property(x => x.Amount).HasColumnType("decimal(18,2)");
-            builder.Property(x => x.DueDate).HasColumnType("datetime");   
+            builder.ToTable("Installment");
+
+            builder.Property(e => e.Amount).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(e => e.PaidAmount).HasColumnType("decimal(18,2)").IsRequired();
+
+            builder.HasOne(e => e.Loan)
+                .WithMany(e => e.Installments)
+                .HasForeignKey(e => e.LoanId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -53,11 +53,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 //register services
 
-builder.Services.AddTransient<IClientRepository, ClientRepository>();
-builder.Services.AddTransient<IClientService, ClientService>();
-builder.Services.AddTransient<ILoanRepository, LoanRepository>();
-builder.Services.AddTransient<ILoanService, LoanService>();
-builder.Services.AddTransient<IInstallmentRepository, InstallmentRepository>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<ILoanRepository, LoanRepository>();
+builder.Services.AddScoped<ILoanService, LoanService>();
+builder.Services.AddScoped<IInstallmentRepository, InstallmentRepository>();
 builder.Services.AddScoped<IBoxService, BoxService>();
 builder.Services.AddScoped<IBoxRepository, BoxRepository>();
 builder.Services.AddScoped<IBoxTransactionRepository, BoxTransactionRepository>();
