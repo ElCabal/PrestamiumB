@@ -8,9 +8,15 @@ namespace Prestamium.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Client> builder)
         {
-            builder.Property(x => x.Name).HasMaxLength(50);
-            builder.Property(x => x.LastName).HasMaxLength(50);
-            builder.Property(x => x.Email).HasMaxLength(100);
+            builder.ToTable("Client");
+            builder.Property(e => e.FirstName).HasMaxLength(100).IsRequired();
+            builder.Property(e => e.LastName).HasMaxLength(100).IsRequired();
+            builder.Property(e => e.DocumentNumber).HasMaxLength(20).IsRequired();
+            builder.Property(e => e.Phone).HasMaxLength(20).IsRequired();
+            builder.Property(e => e.Address).HasMaxLength(500);
+            builder.Property(e => e.Email).HasMaxLength(100);
+
+            builder.HasIndex(e => e.DocumentNumber).IsUnique();
         }
     }
 }

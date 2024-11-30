@@ -54,7 +54,7 @@ namespace Prestamium.Services.Services
                 }
                 loan.RemainingBalance = loan.TotalAmountDue;
 
-                response.Data = await loanRepository.AddAsync(loan);
+                response.Data = await loanRepository.CreateAsync(loan);
                 response.Success = response.Data > 0;
 
                 // Si el préstamo se guardó correctamente, generar y guardar las cuotas
@@ -102,7 +102,7 @@ namespace Prestamium.Services.Services
                 };
 
                 // Guardar cada cuota en la base de datos
-                await installmentRepository.AddAsync(installment);
+                await installmentRepository.CreateAsync(installment);
             }
         }
 

@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Prestamium.Entities;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Prestamium.Persistence
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityUserContext<PrestamiumUserIdentity>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -18,8 +18,8 @@ namespace Prestamium.Persistence
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             //modelBuilder.Entity<Client>().Property(x => x.Name).HasMaxLength(50);
-        }
 
-        //public DbSet<Client> Clients { get; set; }
+
+        }
     }
 }

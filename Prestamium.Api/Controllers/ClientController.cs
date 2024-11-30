@@ -8,48 +8,39 @@ namespace Prestamium.Api.Controllers
     [ApiController]
     public class ClientController : ControllerBase
     {
-        private readonly IClientService service;
+        private readonly IClientService _clientService;
 
-        public ClientController(IClientService service)
+        public ClientController(IClientService clientService)
         {
-            this.service = service;
+            _clientService = clientService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAllClients()
         {
-            var response = await service.GetAsync();
-            return Ok(response);
+            var response = await _clientService.GetAllAsync();
+            return response.Success ? Ok(response) : BadRequest(response);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetClientById(int id)
         {
-            var response = await service.GetAsync(id);
-            return response.Success ? Ok(response) : NotFound(response);
+            var response = await _clientService.GetByIdAsync(id);
+            return response.Success ? Ok(response) : BadRequest(response);
         }
+
+        [HttpGet("document/{documentNumber}")]
+        public async Task<IActionResult> GetClientByDocument(string documentNumber)
+        {
+            var response = await _clientService.GetByDocumentNumberAsync(documentNumber);
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
+
         [HttpPost]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Constants.RoleAdmin)]
-        public async Task<IActionResult> Post(ClientRequestDto clientRequestDto)
+        public async Task<IActionResult> CreateClient([FromBody] ClientRequestDto request)
         {
-            var response = await service.AddAsync(clientRequestDto);
+            var response = await _clientService.CreateAsync(request);
             return response.Success ? Ok(response) : BadRequest(response);
-        }
-
-        [HttpPut("{id:int}")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Constants.RoleAdmin)]
-        public async Task<IActionResult> Put(int id, ClientRequestDto clientRequestDto)
-        {
-            var response = await service.UpdateAsync(id, clientRequestDto);
-            return response.Success ? Ok(response) : BadRequest(response);
-        }
-
-        [HttpDelete("{id:int}")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Constants.RoleAdmin)]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var response = await service.DeleteAsync(id);
-            return response.Success ? Ok(response) : BadRequest(response); 
         }
     }
 }
