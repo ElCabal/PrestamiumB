@@ -234,6 +234,30 @@ namespace Prestamium.Services.Services
             return response;
         }
 
+        public async Task<BaseResponseGeneric<LoanDetailResponseDto>> GetDetailAsync(int id)
+        {
+            var response = new BaseResponseGeneric<LoanDetailResponseDto>();
+            try
+            {
+                var loan = await _loanRepository.GetLoanWithDetailsAsync(id);
+                if (loan != null)
+                {
+                    response.Data = _mapper.Map<LoanDetailResponseDto>(loan);
+                    response.Success = true;
+                }
+                else
+                {
+                    response.ErrorMessage = "Préstamo no encontrado";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al obtener el detalle del préstamo";
+                _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+            }
+            return response;
+        }
+
         public async Task<BaseResponseGeneric<decimal>> CalculateLateFeesAsync(int installmentId, DateTime paymentDate)
         {
             var response = new BaseResponseGeneric<decimal>();

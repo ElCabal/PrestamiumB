@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Prestamium.Entities;
 using Prestamium.Persistence;
 using Prestamium.Repositories.Interfaces;
@@ -9,9 +10,12 @@ namespace Prestamium.Repositories.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        public LoanRepository(ApplicationDbContext context) : base(context)
+        public LoanRepository(
+            ApplicationDbContext context, 
+            IHttpContextAccessor httpContextAccessor
+            ) : base(context, httpContextAccessor)
         {
-            this._context = context;
+            _context = context;
         }
 
         public async Task<ICollection<Loan>> GetLoansByClientAsync(int clientId)
@@ -25,13 +29,22 @@ namespace Prestamium.Repositories.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Loan?> GetLoanWithInstallmentsAsync(int id)
+        {
+            var userId = GetCurrentUserId();
+            return await context.Set<Loan>()
+                .Include(l => l.Installments)
+                .FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
+        }
+
         public async Task<Loan?> GetLoanWithDetailsAsync(int id)
         {
-            return await _context.Set<Loan>()
-                .Include(x => x.Client)
-                .Include(x => x.Box)
-                .Include(x => x.Installments)
-                .FirstOrDefaultAsync(x => x.Id == id && x.Status);
+            var userId = GetCurrentUserId();
+            return await context.Set<Loan>()
+                .Include(l => l.Installments)
+                .Include(l => l.Client)
+                .Include(l => l.Box)
+                .FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
         }
     }
 }

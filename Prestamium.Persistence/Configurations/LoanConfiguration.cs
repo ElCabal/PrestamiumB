@@ -27,6 +27,11 @@ namespace Prestamium.Persistence.Configurations
                 .WithMany(e => e.Loans)
                 .HasForeignKey(e => e.BoxId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

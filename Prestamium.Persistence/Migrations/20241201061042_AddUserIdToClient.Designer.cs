@@ -12,8 +12,8 @@ using Prestamium.Persistence;
 namespace Prestamium.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241130084409_client")]
-    partial class client
+    [Migration("20241201061042_AddUserIdToClient")]
+    partial class AddUserIdToClient
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,13 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Box", (string)null);
                 });
@@ -159,9 +165,15 @@ namespace Prestamium.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BoxId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("BoxTransaction", (string)null);
                 });
@@ -205,10 +217,16 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DocumentNumber")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Client", (string)null);
                 });
@@ -225,13 +243,19 @@ namespace Prestamium.Persistence.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
                     b.Property<int>("LoanId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("PaymentDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -240,7 +264,7 @@ namespace Prestamium.Persistence.Migrations
 
                     b.HasIndex("LoanId");
 
-                    b.ToTable("Installment");
+                    b.ToTable("Installment", (string)null);
                 });
 
             modelBuilder.Entity("Prestamium.Entities.Loan", b =>
@@ -254,21 +278,22 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("BoxId")
+                    b.Property<int>("BoxId")
                         .HasColumnType("int");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Fees")
                         .HasColumnType("int");
 
-                    b.Property<string>("Frecuency")
+                    b.Property<string>("Frequency")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("InterestRate")
                         .HasColumnType("decimal(18,2)");
@@ -280,9 +305,7 @@ namespace Prestamium.Persistence.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("StartDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -293,43 +316,22 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<decimal>("TotalInterestReceivable")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BoxId");
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Loan");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Loan", (string)null);
                 });
 
-            modelBuilder.Entity("Prestamium.Entities.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("InstallmentId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InstallmentId");
-
-                    b.ToTable("Payment");
-                });
-
-            modelBuilder.Entity("Prestamium.Persistence.PrestamiumUserIdentity", b =>
+            modelBuilder.Entity("Prestamium.Entities.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -404,9 +406,20 @@ namespace Prestamium.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Box", b =>
+                {
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Prestamium.Persistence.PrestamiumUserIdentity", null)
+                    b.HasOne("Prestamium.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -415,7 +428,7 @@ namespace Prestamium.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Prestamium.Persistence.PrestamiumUserIdentity", null)
+                    b.HasOne("Prestamium.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -424,7 +437,7 @@ namespace Prestamium.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Prestamium.Persistence.PrestamiumUserIdentity", null)
+                    b.HasOne("Prestamium.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -439,7 +452,26 @@ namespace Prestamium.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Box");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Prestamium.Entities.Client", b =>
+                {
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Prestamium.Entities.Installment", b =>
@@ -447,7 +479,7 @@ namespace Prestamium.Persistence.Migrations
                     b.HasOne("Prestamium.Entities.Loan", "Loan")
                         .WithMany("Installments")
                         .HasForeignKey("LoanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Loan");
@@ -455,28 +487,29 @@ namespace Prestamium.Persistence.Migrations
 
             modelBuilder.Entity("Prestamium.Entities.Loan", b =>
                 {
-                    b.HasOne("Box", null)
+                    b.HasOne("Box", "Box")
                         .WithMany("Loans")
-                        .HasForeignKey("BoxId");
+                        .HasForeignKey("BoxId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Prestamium.Entities.Client", "Client")
                         .WithMany("Loans")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Box");
 
                     b.Navigation("Client");
-                });
 
-            modelBuilder.Entity("Prestamium.Entities.Payment", b =>
-                {
-                    b.HasOne("Prestamium.Entities.Installment", "Installment")
-                        .WithMany("Payments")
-                        .HasForeignKey("InstallmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Installment");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Box", b =>
@@ -489,11 +522,6 @@ namespace Prestamium.Persistence.Migrations
             modelBuilder.Entity("Prestamium.Entities.Client", b =>
                 {
                     b.Navigation("Loans");
-                });
-
-            modelBuilder.Entity("Prestamium.Entities.Installment", b =>
-                {
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Prestamium.Entities.Loan", b =>

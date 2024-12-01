@@ -5,9 +5,11 @@ namespace Prestamium.Services.Interfaces
 {
     public interface IBoxService
     {
-        Task<BaseResponseGeneric<int>> CreateAsync(BoxRequestDto request);  // antes AddAsync
-        Task<BaseResponseGeneric<ICollection<BoxResponseDto>>> GetAllAsync();  // se mantiene igual
-        Task<BaseResponseGeneric<BoxResponseDto>> GetByIdAsync(int id);  // se mantiene igual
-        Task<BaseResponseGeneric<int>> CreateTransactionAsync(BoxTransactionRequestDto request);  // antes AddTransactionAsync
+        Task<BaseResponseGeneric<int>> CreateAsync(BoxRequestDto request);
+        Task<BaseResponseGeneric<ICollection<BoxResponseDto>>> GetAllAsync();
+        Task<BaseResponseGeneric<BoxResponseDto>> GetByIdAsync(int id);
+        Task<BaseResponseGeneric<BoxDetailResponseDto>> GetDetailAsync(int id);
+        Task<BaseResponseGeneric<int>> CreateTransactionAsync(BoxTransactionRequestDto request);
+        Task<BaseResponseGeneric<ICollection<BoxTransactionResponseDto>>> GetTransactionsByBoxIdAsync(int boxId);
     }
 }

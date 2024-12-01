@@ -8,4 +8,6 @@ public class Box : BaseEntity
     public decimal CurrentBalance { get; set; }
     public ICollection<Loan> Loans { get; set; } = new List<Loan>();
     public ICollection<BoxTransaction> Transactions { get; set; } = new List<BoxTransaction>();
+    public string UserId { get; set; } = default!;
+    public User User { get; set; } = default!;
 }

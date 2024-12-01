@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Prestamium.Entities;
 using Prestamium.Persistence;
 using Prestamium.Repositories.Interfaces;
 using Prestamium.Repositories.Repositories;
@@ -19,8 +20,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebApp",
+        builder => builder
+            .WithOrigins("http://localhost:4200")  // URL de tu aplicación Angular
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 // Configurar Identity
-builder.Services.AddIdentityCore<PrestamiumUserIdentity>()
+builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -62,6 +72,7 @@ builder.Services.AddScoped<IBoxService, BoxService>();
 builder.Services.AddScoped<IBoxRepository, BoxRepository>();
 builder.Services.AddScoped<IBoxTransactionRepository, BoxTransactionRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHttpContextAccessor();
 
 //Profile Mappers
 builder.Services.AddAutoMapper(config =>
@@ -79,6 +90,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowWebApp");
 
 app.UseHttpsRedirection();
 

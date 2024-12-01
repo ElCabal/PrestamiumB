@@ -13,6 +13,11 @@ namespace Prestamium.Services.Profiles
             CreateMap<Box, BoxResponseDto>();
             CreateMap<BoxTransactionRequestDto, BoxTransaction>();
             CreateMap<BoxTransaction, BoxTransactionResponseDto>();
+
+            CreateMap<Box, BoxDetailResponseDto>();
+            CreateMap<Loan, LoanSimpleResponseDto>()
+                .ForMember(dest => dest.ClientName,
+                    opt => opt.MapFrom(src => $"{src.Client.FirstName} {src.Client.LastName}"));
         }
     }
 }

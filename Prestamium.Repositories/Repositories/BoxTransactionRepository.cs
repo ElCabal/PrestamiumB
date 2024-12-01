@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Prestamium.Entities;
 using Prestamium.Persistence;
 using Prestamium.Repositories.Interfaces;
@@ -9,9 +10,12 @@ namespace Prestamium.Repositories.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        public BoxTransactionRepository(ApplicationDbContext context) : base(context)
+        public BoxTransactionRepository(
+            ApplicationDbContext context, 
+            IHttpContextAccessor httpContextAccessor
+            ) : base(context, httpContextAccessor)
         {
-            this._context = context;
+            _context = context;
         }
 
         // Solo implementamos el método específico de IBoxTransactionRepository

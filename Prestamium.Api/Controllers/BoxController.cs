@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Prestamium.Dto.Request;
 using Prestamium.Services.Interfaces;
 
 namespace Prestamium.Api.Controllers
 {
+    [Authorize]
     [Route("api/boxes")]
     [ApiController]
     public class BoxController : ControllerBase
@@ -36,10 +38,24 @@ namespace Prestamium.Api.Controllers
             return response.Success ? Ok(response) : BadRequest(response);
         }
 
+        [HttpGet("{id}/detail")]
+        public async Task<IActionResult> GetBoxDetail(int id)
+        {
+            var response = await _boxService.GetDetailAsync(id);
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
+
         [HttpPost("transactions")]
         public async Task<IActionResult> CreateTransaction([FromBody] BoxTransactionRequestDto request)
         {
             var response = await _boxService.CreateTransactionAsync(request);
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpGet("{boxId}/transactions")]
+        public async Task<IActionResult> GetBoxTransactions(int boxId)
+        {
+            var response = await _boxService.GetTransactionsByBoxIdAsync(boxId);
             return response.Success ? Ok(response) : BadRequest(response);
         }
     }

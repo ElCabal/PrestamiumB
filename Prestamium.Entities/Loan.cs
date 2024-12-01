@@ -18,6 +18,8 @@
         public Client Client { get; set; } = default!;
         public int BoxId { get; set; }
         public Box Box { get; set; } = default!;
+        public string UserId { get; set; } = default!;
+        public User User { get; set; } = default!;
         public ICollection<Installment> Installments { get; set; } = new List<Installment>();
     }
 
