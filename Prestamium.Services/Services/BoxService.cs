@@ -148,5 +148,46 @@ namespace Prestamium.Services.Services
             }
             return response;
         }
+
+        public async Task<BaseResponseGeneric<ICollection<BoxTransactionResponseDto>>> GetTransactionsByBoxIdAsync(int boxId)
+        {
+            var response = new BaseResponseGeneric<ICollection<BoxTransactionResponseDto>>();
+            try
+            {
+                var transactions = await transactionRepository.GetTransactionsByBoxAsync(boxId);
+                response.Data = mapper.Map<ICollection<BoxTransactionResponseDto>>(transactions);
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al obtener las transacciones";
+                logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+            }
+            return response;
+        }
+
+        public async Task<BaseResponseGeneric<BoxDetailResponseDto>> GetDetailAsync(int id)
+        {
+            var response = new BaseResponseGeneric<BoxDetailResponseDto>();
+            try
+            {
+                var box = await boxRepository.GetBoxWithDetailsAsync(id);
+                if (box != null)
+                {
+                    response.Data = mapper.Map<BoxDetailResponseDto>(box);
+                    response.Success = true;
+                }
+                else
+                {
+                    response.ErrorMessage = "Caja no encontrada";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al obtener el detalle de la caja";
+                logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+            }
+            return response;
+        }
     }
 }

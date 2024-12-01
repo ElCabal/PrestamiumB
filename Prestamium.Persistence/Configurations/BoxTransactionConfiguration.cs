@@ -20,6 +20,11 @@ namespace Prestamium.Persistence.Configurations
                 .WithMany(e => e.Transactions)
                 .HasForeignKey(e => e.BoxId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

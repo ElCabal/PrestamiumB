@@ -11,5 +11,7 @@
 
         // Navegación
         public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+        public string UserId { get; set; } = default!;
+        public User User { get; set; } = default!;
     }
 }

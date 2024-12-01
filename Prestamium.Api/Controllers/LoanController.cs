@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Prestamium.Dto.Request;
 using Prestamium.Services.Interfaces;
 
 namespace Prestamium.Api.Controllers
 {
+    [Authorize]
     [Route("api/loans")]
     [ApiController]
     public class LoanController : ControllerBase
@@ -40,6 +42,13 @@ namespace Prestamium.Api.Controllers
         public async Task<IActionResult> CreateLoan([FromBody] LoanRequestDto request)
         {
             var response = await _loanService.CreateAsync(request);
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpGet("{id}/detail")]
+        public async Task<IActionResult> GetLoanDetail(int id)
+        {
+            var response = await _loanService.GetDetailAsync(id);
             return response.Success ? Ok(response) : BadRequest(response);
         }
 

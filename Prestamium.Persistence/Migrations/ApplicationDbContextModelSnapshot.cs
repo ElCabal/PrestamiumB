@@ -49,7 +49,13 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Box", (string)null);
                 });
@@ -156,9 +162,15 @@ namespace Prestamium.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BoxId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("BoxTransaction", (string)null);
                 });
@@ -202,10 +214,16 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DocumentNumber")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Client", (string)null);
                 });
@@ -295,16 +313,22 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<decimal>("TotalInterestReceivable")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BoxId");
 
                     b.HasIndex("ClientId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Loan", (string)null);
                 });
 
-            modelBuilder.Entity("Prestamium.Persistence.PrestamiumUserIdentity", b =>
+            modelBuilder.Entity("Prestamium.Entities.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -379,9 +403,20 @@ namespace Prestamium.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Box", b =>
+                {
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Prestamium.Persistence.PrestamiumUserIdentity", null)
+                    b.HasOne("Prestamium.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -390,7 +425,7 @@ namespace Prestamium.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Prestamium.Persistence.PrestamiumUserIdentity", null)
+                    b.HasOne("Prestamium.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -399,7 +434,7 @@ namespace Prestamium.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Prestamium.Persistence.PrestamiumUserIdentity", null)
+                    b.HasOne("Prestamium.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -414,7 +449,26 @@ namespace Prestamium.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Box");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Prestamium.Entities.Client", b =>
+                {
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Prestamium.Entities.Installment", b =>
@@ -442,9 +496,17 @@ namespace Prestamium.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Box");
 
                     b.Navigation("Client");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Box", b =>

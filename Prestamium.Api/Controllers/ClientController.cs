@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Prestamium.Dto.Request;
 using Prestamium.Services.Interfaces;
 
 namespace Prestamium.Api.Controllers
 {
+    [Authorize]
     [Route("api/clients")]
     [ApiController]
     public class ClientController : ControllerBase

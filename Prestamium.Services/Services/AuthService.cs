@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Prestamium.Dto.Request;
 using Prestamium.Dto.Response;
+using Prestamium.Entities;
 using Prestamium.Persistence;
 using Prestamium.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,12 +13,12 @@ using System.Text;
 
 public class AuthService : IAuthService
 {
-    private readonly UserManager<PrestamiumUserIdentity> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
 
     public AuthService(
-        UserManager<PrestamiumUserIdentity> userManager,
+        UserManager<User> userManager,
         IConfiguration configuration,
         ILogger<AuthService> logger)
     {
@@ -41,7 +42,7 @@ public class AuthService : IAuthService
             }
 
             // Creamos el nuevo usuario
-            var user = new PrestamiumUserIdentity
+            var user = new User
             {
                 UserName = request.Email,
                 Email = request.Email,
@@ -105,7 +106,9 @@ public class AuthService : IAuthService
             {
                 UserId = user.Id,
                 Email = user.Email,
-                Token = GenerateJwtToken(user)
+                Token = GenerateJwtToken(user),
+                FirstName = user.FirstName,  // Agregar estos campos
+                LastName = user.LastName
             };
             response.Success = true;
         }
@@ -118,7 +121,7 @@ public class AuthService : IAuthService
 
         return response;
     }
-    private string GenerateJwtToken(PrestamiumUserIdentity user)
+    private string GenerateJwtToken(User user)
     {
             // Obtenemos la clave secreta desde la configuración
             var key = new SymmetricSecurityKey(

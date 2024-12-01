@@ -10,5 +10,8 @@
         public DateTime TransactionDate { get; set; }
         public decimal PreviousBalance { get; set; }
         public decimal NewBalance { get; set; }
+        public string UserId { get; set; } = default!;
+        public User User { get; set; } = default!;
+
     }
 }

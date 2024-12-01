@@ -17,6 +17,11 @@ namespace Prestamium.Persistence.Configurations
             builder.Property(e => e.Email).HasMaxLength(100);
 
             builder.HasIndex(e => e.DocumentNumber).IsUnique();
+
+            builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

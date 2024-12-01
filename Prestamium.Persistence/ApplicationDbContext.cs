@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Prestamium.Entities;
 using System.Reflection;
 
 namespace Prestamium.Persistence
 {
-    public class ApplicationDbContext : IdentityUserContext<PrestamiumUserIdentity>
+    public class ApplicationDbContext : IdentityUserContext<User>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
