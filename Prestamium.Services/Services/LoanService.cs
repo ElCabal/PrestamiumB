@@ -17,6 +17,7 @@ namespace Prestamium.Services.Services
         private readonly IBoxRepository _boxRepository;
         private readonly IClientRepository _clientRepository;
         private readonly IInstallmentRepository _installmentRepository;
+        private readonly IBoxTransactionRepository boxTransactionRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<LoanService> _logger;
 
@@ -26,6 +27,7 @@ namespace Prestamium.Services.Services
             IBoxRepository boxRepository,
             IClientRepository clientRepository,
             IInstallmentRepository installmentRepository,
+            IBoxTransactionRepository boxTransactionRepository,
             IMapper mapper,
             ILogger<LoanService> logger)
         {
@@ -34,6 +36,7 @@ namespace Prestamium.Services.Services
             _boxRepository = boxRepository;
             _clientRepository = clientRepository;
             _installmentRepository = installmentRepository;
+            this.boxTransactionRepository = boxTransactionRepository;
             _mapper = mapper;
             _logger = logger;
         }
@@ -115,6 +118,7 @@ namespace Prestamium.Services.Services
                             PreviousBalance = box.CurrentBalance + request.Amount,
                             NewBalance = box.CurrentBalance
                         };
+                        await boxTransactionRepository.CreateAsync(boxTransaction);
 
                         await transaction.CommitAsync();
                         response.Success = true;
@@ -353,6 +357,8 @@ namespace Prestamium.Services.Services
                         PreviousBalance = box.CurrentBalance,
                         NewBalance = box.CurrentBalance + amount
                     };
+
+                    await boxTransactionRepository.CreateAsync(boxTransaction);
 
                     box.CurrentBalance += amount;
                     await _boxRepository.UpdateAsync();

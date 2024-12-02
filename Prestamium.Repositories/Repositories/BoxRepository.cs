@@ -27,6 +27,7 @@ public class BoxRepository : BaseRepository<Box>, IBoxRepository
         return await context.Set<Box>()
             .Include(b => b.Transactions)
             .Include(b => b.Loans)
+            .ThenInclude(b => b.Client)
             .FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
     }
 }

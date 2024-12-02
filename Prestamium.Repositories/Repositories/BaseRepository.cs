@@ -83,7 +83,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     }
 
     // Método helper para verificar si la entidad tiene propiedad UserId
-    private bool HasUserProperty()
+    public bool HasUserProperty()
     {
         return typeof(TEntity).GetProperty("UserId") != null;
     }

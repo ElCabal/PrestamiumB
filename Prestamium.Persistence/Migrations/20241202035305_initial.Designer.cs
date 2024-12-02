@@ -12,7 +12,7 @@ using Prestamium.Persistence;
 namespace Prestamium.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241130233403_initial")]
+    [Migration("20241202035305_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -217,10 +217,16 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DocumentNumber")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Client", (string)null);
                 });
@@ -310,11 +316,17 @@ namespace Prestamium.Persistence.Migrations
                     b.Property<decimal>("TotalInterestReceivable")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BoxId");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Loan", (string)null);
                 });
@@ -391,7 +403,7 @@ namespace Prestamium.Persistence.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("Box", b =>
@@ -451,6 +463,17 @@ namespace Prestamium.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Prestamium.Entities.Client", b =>
+                {
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Prestamium.Entities.Installment", b =>
                 {
                     b.HasOne("Prestamium.Entities.Loan", "Loan")
@@ -476,9 +499,17 @@ namespace Prestamium.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Prestamium.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Box");
 
                     b.Navigation("Client");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Box", b =>
