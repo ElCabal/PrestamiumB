@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Prestamium.Entities;
 using Prestamium.Persistence;
 using Prestamium.Repositories.Interfaces;
+using System.Security.Claims;
 
 namespace Prestamium.Repositories.Repositories
 {
@@ -16,6 +17,17 @@ namespace Prestamium.Repositories.Repositories
             ) : base(context, httpContextAccessor)
         {
             _context = context;
+        }
+
+        public override async Task<ICollection<Loan>> GetAllAsync()
+        {
+            var userId = GetCurrentUserId();
+            return await context.Set<Loan>()
+                .Where(x => x.Status)
+                .Include(x => x.Client)
+                .WhereIf(HasUserProperty(), x => EF.Property<string>(x, "UserId") == userId)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<ICollection<Loan>> GetLoansByClientAsync(int clientId)
