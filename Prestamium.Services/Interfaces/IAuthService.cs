@@ -7,5 +7,7 @@ namespace Prestamium.Services.Interfaces
     {
         Task<BaseResponseGeneric<AuthResponseDto>> LoginAsync(LoginRequestDto loginRequestDto);
         Task<BaseResponseGeneric<AuthResponseDto>> RegisterAsync(RegisterRequestDto registerRequestDto);
+        Task<BaseResponseGeneric<AuthResponseDto>> RefreshTokenAsync(string refreshToken);
+        Task<bool> RevokeTokenAsync(string refreshToken);
     }
 }

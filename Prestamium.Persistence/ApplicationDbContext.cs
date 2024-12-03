@@ -12,6 +12,8 @@ namespace Prestamium.Persistence
 
         }
 
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         //Fluent Api
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
