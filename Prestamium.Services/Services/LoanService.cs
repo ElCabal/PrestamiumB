@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Prestamium.Dto.Request;
@@ -333,6 +333,34 @@ namespace Prestamium.Services.Services
                     return response;
                 }
 
+                // Validar que el monto del pago no exceda el saldo pendiente
+                if (amount > loan.RemainingBalance)
+                {
+                    response.ErrorMessage = $"El monto del pago (${amount}) excede el saldo pendiente (${loan.RemainingBalance})";
+                    return response;
+                }
+
+                // Validar que el monto del pago no exceda la cuota si aún no está pagada
+                decimal maxPaymentAmount = installment.Amount;
+                if (!installment.IsPaid)
+                {
+                    // Si hay mora, calcular el monto máximo incluyendo la mora
+                    if (DateTime.Now > installment.DueDate)
+                    {
+                        var lateFees = await CalculateLateFeesAsync(installmentId, DateTime.Now);
+                        if (lateFees.Success && lateFees.Data > 0)
+                        {
+                            maxPaymentAmount += lateFees.Data;
+                        }
+                    }
+
+                    if (amount > maxPaymentAmount)
+                    {
+                        response.ErrorMessage = $"El monto del pago (${amount}) excede el monto de la cuota más la mora (${maxPaymentAmount})";
+                        return response;
+                    }
+                }
+
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
@@ -344,6 +372,13 @@ namespace Prestamium.Services.Services
 
                     // Actualizar el saldo restante del préstamo
                     loan.RemainingBalance -= amount;
+                    
+                    // Asegurar que el saldo no sea negativo (por redondeo)
+                    if (loan.RemainingBalance < 0)
+                    {
+                        loan.RemainingBalance = 0;
+                    }
+                    
                     await _loanRepository.UpdateAsync();
 
                     // Registrar la entrada en la caja

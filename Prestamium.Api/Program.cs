@@ -26,7 +26,9 @@ builder.Services.AddCors(options =>
         builder => builder
             .WithOrigins("http://localhost:4200")  // URL de tu aplicación Angular
             .AllowAnyMethod()
-            .AllowAnyHeader());
+            .AllowAnyHeader()
+            .SetIsOriginAllowed(_ => true)
+            .AllowCredentials());
 });
 
 // Configurar Identity
@@ -72,6 +74,7 @@ builder.Services.AddScoped<IBoxService, BoxService>();
 builder.Services.AddScoped<IBoxRepository, BoxRepository>();
 builder.Services.AddScoped<IBoxTransactionRepository, BoxTransactionRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddHttpContextAccessor();
 
 //Profile Mappers
