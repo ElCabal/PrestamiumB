@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -16,15 +17,18 @@ public class AuthService : IAuthService
     private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
+    private readonly ApplicationDbContext _context;
 
     public AuthService(
         UserManager<User> userManager,
         IConfiguration configuration,
-        ILogger<AuthService> logger)
+        ILogger<AuthService> logger,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
         _configuration = configuration;
         _logger = logger;
+        _context = context;
     }
 
     public async Task<BaseResponseGeneric<AuthResponseDto>> RegisterAsync(RegisterRequestDto request)
@@ -101,13 +105,18 @@ public class AuthService : IAuthService
                 return response;
             }
 
-            // Si todo es correcto, generamos el token
+            // Generamos un nuevo refresh token
+            var refreshToken = await GenerateRefreshToken(user.Id);
+
+            // Generamos el token JWT y la respuesta
             response.Data = new AuthResponseDto
             {
                 UserId = user.Id,
                 Email = user.Email,
                 Token = GenerateJwtToken(user),
-                FirstName = user.FirstName,  // Agregar estos campos
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpiration = refreshToken.ExpiryDate,
+                FirstName = user.FirstName,
                 LastName = user.LastName
             };
             response.Success = true;
@@ -151,4 +160,109 @@ public class AuthService : IAuthService
             // Generamos el token como string
             return new JwtSecurityTokenHandler().WriteToken(token);
      }
+
+    private async Task<RefreshToken> GenerateRefreshToken(string userId)
+    {
+        // El refresh token durará 7 veces más que el JWT
+        var jwtDurationInMinutes = _configuration.GetValue<int>("JwtSettings:DurationInMinutes");
+        var refreshTokenDurationInMinutes = jwtDurationInMinutes * 7;
+
+        var refreshToken = new RefreshToken
+        {
+            Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
+            ExpiryDate = DateTime.UtcNow.AddMinutes(refreshTokenDurationInMinutes),
+            CreatedDate = DateTime.UtcNow,
+            UserId = userId,
+            IsRevoked = false
+        };
+
+        // Antes de crear uno nuevo, revocamos cualquier refresh token activo del usuario
+        var existingTokens = await _context.RefreshTokens
+            .Where(rt => rt.UserId == userId && !rt.IsRevoked)
+            .ToListAsync();
+
+        foreach (var token in existingTokens)
+        {
+            token.IsRevoked = true;
+        }
+
+        _context.RefreshTokens.Add(refreshToken);
+        await _context.SaveChangesAsync();
+
+        return refreshToken;
+    }
+
+    public async Task<BaseResponseGeneric<AuthResponseDto>> RefreshTokenAsync(string refreshToken)
+    {
+        var response = new BaseResponseGeneric<AuthResponseDto>();
+        try
+        {
+            // Buscamos el refresh token en la base de datos
+            var storedToken = await _context.RefreshTokens
+                .Include(rt => rt.User)
+                .FirstOrDefaultAsync(rt => rt.Token == refreshToken && !rt.IsRevoked);
+
+            if (storedToken == null)
+            {
+                response.Success = false;
+                response.ErrorMessage = "Token de renovación inválido";
+                return response;
+            }
+
+            // Verificamos si el token ha expirado
+            if (storedToken.ExpiryDate < DateTime.UtcNow)
+            {
+                storedToken.IsRevoked = true;
+                await _context.SaveChangesAsync();
+
+                response.Success = false;
+                response.ErrorMessage = "Token de renovación expirado";
+                return response;
+            }
+
+            // Generamos un nuevo refresh token
+            var newRefreshToken = await GenerateRefreshToken(storedToken.UserId);
+
+            // Generamos la respuesta con el nuevo JWT y refresh token
+            response.Data = new AuthResponseDto
+            {
+                UserId = storedToken.User.Id,
+                Email = storedToken.User.Email!,
+                Token = GenerateJwtToken(storedToken.User),
+                RefreshToken = newRefreshToken.Token,
+                RefreshTokenExpiration = newRefreshToken.ExpiryDate,
+                FirstName = storedToken.User.FirstName,
+                LastName = storedToken.User.LastName
+            };
+            response.Success = true;
+        }
+        catch (Exception ex)
+        {
+            response.Success = false;
+            response.ErrorMessage = "Error al renovar el token";
+            _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+        }
+
+        return response;
+    }
+
+    public async Task<bool> RevokeTokenAsync(string refreshToken)
+    {
+        try
+        {
+            var storedToken = await _context.RefreshTokens
+                .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+
+            if (storedToken == null)
+                return false;
+
+            storedToken.IsRevoked = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }
