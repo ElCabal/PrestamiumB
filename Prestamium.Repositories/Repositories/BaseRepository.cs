@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Prestamium.Entities;
 using Prestamium.Repositories.Interfaces;
@@ -86,6 +86,48 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     public bool HasUserProperty()
     {
         return typeof(TEntity).GetProperty("UserId") != null;
+    }
+    
+    // Implementación del método de paginación
+    public virtual async Task<(ICollection<TEntity> Items, int TotalCount)> GetPaginatedAsync(
+        int pageNumber,
+        int pageSize,
+        Expression<Func<TEntity, bool>>? filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
+    {
+        var userId = GetCurrentUserId();
+        
+        // Validar parámetros de paginación
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        
+        // Construir la consulta base
+        var query = context.Set<TEntity>()
+            .Where(x => x.Status)
+            .WhereIf(HasUserProperty(), x => EF.Property<string>(x, "UserId") == userId);
+            
+        // Aplicar filtro adicional si se proporciona
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+        
+        // Obtener el conteo total para la paginación
+        var totalCount = await query.CountAsync();
+        
+        // Aplicar ordenamiento si se proporciona, de lo contrario ordenar por Id
+        var orderedQuery = orderBy != null 
+            ? orderBy(query) 
+            : query.OrderByDescending(e => e.Id);
+        
+        // Aplicar paginación
+        var items = await orderedQuery
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+            
+        return (items, totalCount);
     }
 }
 

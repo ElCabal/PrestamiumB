@@ -1,4 +1,4 @@
-﻿using Prestamium.Entities;
+using Prestamium.Entities;
 using System.Linq.Expressions;
 
 namespace Prestamium.Repositories.Interfaces
@@ -12,5 +12,12 @@ namespace Prestamium.Repositories.Interfaces
         Task<int> CreateAsync(TEntity entity);
         Task UpdateAsync();
         Task DeleteAsync(int id);
+        
+        // Nuevo método para paginación
+        Task<(ICollection<TEntity> Items, int TotalCount)> GetPaginatedAsync(
+            int pageNumber, 
+            int pageSize, 
+            Expression<Func<TEntity, bool>>? filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null);
     }
 }

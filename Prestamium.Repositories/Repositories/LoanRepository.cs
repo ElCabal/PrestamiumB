@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Prestamium.Dto.Request;
 using Prestamium.Entities;
 using Prestamium.Persistence;
 using Prestamium.Repositories.Interfaces;
@@ -57,6 +58,69 @@ namespace Prestamium.Repositories.Repositories
                 .Include(l => l.Client)
                 .Include(l => l.Box)
                 .FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
+        }
+        
+        public async Task<(ICollection<Loan> Items, int TotalCount)> GetPaginatedLoansAsync(LoanFilterRequestDto filter)
+        {
+            var userId = GetCurrentUserId();
+            
+            // Construir la consulta base
+            var query = _context.Set<Loan>()
+                .Where(x => x.Status)
+                .Include(x => x.Client)
+                .Include(x => x.Box)
+                .WhereIf(HasUserProperty(), x => EF.Property<string>(x, "UserId") == userId);
+            
+            // Aplicar filtros
+            if (filter.ClientId.HasValue)
+            {
+                query = query.Where(x => x.ClientId == filter.ClientId.Value);
+            }
+            
+            if (filter.MinAmount.HasValue)
+            {
+                query = query.Where(x => x.Amount >= filter.MinAmount.Value);
+            }
+            
+            if (filter.MaxAmount.HasValue)
+            {
+                query = query.Where(x => x.Amount <= filter.MaxAmount.Value);
+            }
+            
+            if (filter.StartDateFrom.HasValue)
+            {
+                query = query.Where(x => x.StartDate >= filter.StartDateFrom.Value);
+            }
+            
+            if (filter.StartDateTo.HasValue)
+            {
+                query = query.Where(x => x.StartDate <= filter.StartDateTo.Value);
+            }
+            
+            if (!string.IsNullOrEmpty(filter.Frequency))
+            {
+                query = query.Where(x => x.Frequency.ToLower() == filter.Frequency.ToLower());
+            }
+            
+            if (filter.IsPaid.HasValue)
+            {
+                query = query.Where(x => (x.RemainingBalance == 0) == filter.IsPaid.Value);
+            }
+            
+            // Obtener el conteo total para la paginación
+            var totalCount = await query.CountAsync();
+            
+            // Aplicar ordenamiento por Id descendente
+            var orderedQuery = query.OrderByDescending(e => e.Id);
+            
+            // Aplicar paginación
+            var items = await orderedQuery
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .AsNoTracking()
+                .ToListAsync();
+                
+            return (items, totalCount);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Prestamium.Dto.Request;
+using Prestamium.Dto.Request;
 using Prestamium.Dto.Response;
 
 namespace Prestamium.Services.Interfaces
@@ -12,5 +12,8 @@ namespace Prestamium.Services.Interfaces
         Task<BaseResponseGeneric<LoanDetailResponseDto>> GetDetailAsync(int clientId);
         Task<BaseResponseGeneric<decimal>> CalculateLateFeesAsync(int installmentId, DateTime paymentDate);
         Task<BaseResponseGeneric<bool>> RegisterInstallmentPaymentAsync(int installmentId, decimal amount, int boxId);
+        
+        // Nuevo método para obtener préstamos paginados y filtrados
+        Task<PaginatedResponseDto<LoanResponseDto>> GetPaginatedAsync(LoanFilterRequestDto filter);
     }
 }

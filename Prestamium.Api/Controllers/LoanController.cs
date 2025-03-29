@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Prestamium.Dto.Request;
 using Prestamium.Services.Interfaces;
@@ -21,6 +21,13 @@ namespace Prestamium.Api.Controllers
         public async Task<IActionResult> GetAllLoans()
         {
             var response = await _loanService.GetAllAsync();
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpGet("paginated")]
+        public async Task<IActionResult> GetPaginatedLoans([FromQuery] LoanFilterRequestDto filter)
+        {
+            var response = await _loanService.GetPaginatedAsync(filter);
             return response.Success ? Ok(response) : BadRequest(response);
         }
 
