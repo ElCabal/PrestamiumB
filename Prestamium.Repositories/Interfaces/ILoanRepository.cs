@@ -1,4 +1,5 @@
-﻿using Prestamium.Entities;
+using Prestamium.Dto.Request;
+using Prestamium.Entities;
 
 namespace Prestamium.Repositories.Interfaces
 {
@@ -7,5 +8,8 @@ namespace Prestamium.Repositories.Interfaces
         Task<ICollection<Loan>> GetLoansByClientAsync(int clientId);
         Task<Loan?> GetLoanWithInstallmentsAsync(int id);
         Task<Loan?> GetLoanWithDetailsAsync(int id);
+        
+        // Nuevo método para paginación y filtros de préstamos
+        Task<(ICollection<Loan> Items, int TotalCount)> GetPaginatedLoansAsync(LoanFilterRequestDto filter);
     }
 }

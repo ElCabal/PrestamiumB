@@ -7,6 +7,7 @@ using Prestamium.Entities;
 using Prestamium.Persistence;
 using Prestamium.Repositories.Interfaces;
 using Prestamium.Services.Interfaces;
+using System.Linq.Expressions;
 
 namespace Prestamium.Services.Services
 {
@@ -411,6 +412,78 @@ namespace Prestamium.Services.Services
             catch (Exception ex)
             {
                 response.ErrorMessage = "Error al registrar el pago";
+                _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+            }
+            return response;
+        }
+
+        public async Task<PaginatedResponseDto<LoanResponseDto>> GetPaginatedAsync(LoanFilterRequestDto filter)
+        {
+            var response = new PaginatedResponseDto<LoanResponseDto>();
+            try
+            {
+                // Validar parámetros de paginación
+                if (filter.PageNumber < 1) filter.PageNumber = 1;
+                if (filter.PageSize < 1) filter.PageSize = 10;
+                
+                // Aplicar filtros manualmente
+                var loans = await _loanRepository.GetAllAsync();
+                var filteredLoans = loans.AsQueryable();
+                
+                if (filter.ClientId.HasValue)
+                {
+                    filteredLoans = filteredLoans.Where(x => x.ClientId == filter.ClientId.Value);
+                }
+                
+                if (filter.MinAmount.HasValue)
+                {
+                    filteredLoans = filteredLoans.Where(x => x.Amount >= filter.MinAmount.Value);
+                }
+                
+                if (filter.MaxAmount.HasValue)
+                {
+                    filteredLoans = filteredLoans.Where(x => x.Amount <= filter.MaxAmount.Value);
+                }
+                
+                if (filter.StartDateFrom.HasValue)
+                {
+                    filteredLoans = filteredLoans.Where(x => x.StartDate >= filter.StartDateFrom.Value);
+                }
+                
+                if (filter.StartDateTo.HasValue)
+                {
+                    filteredLoans = filteredLoans.Where(x => x.StartDate <= filter.StartDateTo.Value);
+                }
+                
+                if (!string.IsNullOrEmpty(filter.Frequency))
+                {
+                    filteredLoans = filteredLoans.Where(x => x.Frequency.ToLower() == filter.Frequency.ToLower());
+                }
+                
+                if (filter.IsPaid.HasValue)
+                {
+                    filteredLoans = filteredLoans.Where(x => (x.RemainingBalance == 0) == filter.IsPaid.Value);
+                }
+                
+                // Ordenar y paginar
+                var orderedLoans = filteredLoans.OrderByDescending(x => x.Id);
+                var totalCount = orderedLoans.Count();
+                var pagedLoans = orderedLoans
+                    .Skip((filter.PageNumber - 1) * filter.PageSize)
+                    .Take(filter.PageSize)
+                    .ToList();
+                
+                // Mapear resultados
+                response.Items = _mapper.Map<ICollection<LoanResponseDto>>(pagedLoans);
+                response.PageNumber = filter.PageNumber;
+                response.PageSize = filter.PageSize;
+                response.TotalCount = totalCount;
+                response.TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize);
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al obtener los préstamos";
                 _logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
             }
             return response;

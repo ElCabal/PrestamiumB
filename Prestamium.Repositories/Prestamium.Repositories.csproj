@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Prestamium.Dto\Prestamium.Dto.csproj" />
     <ProjectReference Include="..\Prestamium.Entities\Prestamium.Entities.csproj" />
     <ProjectReference Include="..\Prestamium.Persistence\Prestamium.Persistence.csproj" />
   </ItemGroup>
